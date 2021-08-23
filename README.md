@@ -6,5 +6,5 @@ Some images of the project:
 
 ![alt text](https://github.com/Jonathon-A/AStarPathfinding/blob/main/Images/BigMaze.png)
 ![alt text](https://github.com/Jonathon-A/AStarPathfinding/blob/main/Images/BigMazeSolved.png)
-![alt text](https://github.com/Jonathon-A/AStarPathfinding/blob/main/Images/RatMaze.png)
+![alt text](https://github.com/Jonathon-A/AStarPathfinding/blob/main/Images/RatMazeSolved.png)
 ![alt text](https://github.com/Jonathon-A/AStarPathfinding/blob/main/Images/JonMaze.png)
