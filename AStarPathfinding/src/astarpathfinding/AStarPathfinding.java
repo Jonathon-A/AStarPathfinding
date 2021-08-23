@@ -20,32 +20,29 @@ import javax.swing.JLayeredPane;
 import javax.swing.JSlider;
 import javax.swing.event.ChangeEvent;
 
-public class AStarPathfinding {
+public abstract class AStarPathfinding {
 
     //Directory of project on user's computer
-    final String UserDirectory = System.getProperty("user.dir") + "\\dist\\";
-    private BufferedImage Maze = null;
-    final private JFrame GUIWindow = new JFrame("A*Pathfinder");
+    final static String UserDirectory = System.getProperty("user.dir") + "\\dist\\";
 
     public static void main(String[] args) {
-        AStarPathfinding Main = new AStarPathfinding();
 
-        Main.GetImage();
-        Main.WindowSetup();
+        GetImage();
 
     }
 
-    private Node[][] AllNodes;
-    private BufferedImage InputMaze = null;
+    private static Node[][] AllNodes;
+    private static BufferedImage InputMaze = null;
+    private static BufferedImage MazeImage = null;
 
-    private void GetImage() {
+    private static void GetImage() {
         Scanner input = new Scanner(System.in);
 
         do {
 
             System.out.println("Image name:");
-            //String name = "Hard.jpg";
-            String name = input.next();
+            //String name = "5.png";
+             String name = input.next();
 
             try {
                 InputMaze = CreateBufferedImage(name);
@@ -55,177 +52,97 @@ public class AStarPathfinding {
 
         } while (InputMaze == null);
 
-        Maze = new BufferedImage(InputMaze.getWidth(), InputMaze.getHeight(), BufferedImage.TYPE_INT_ARGB);
-        Maze.getGraphics().drawImage(InputMaze, 0, 0, null);
+        MazeImage = new BufferedImage(InputMaze.getWidth(), InputMaze.getHeight(), BufferedImage.TYPE_INT_ARGB);
 
-        AllNodes = new Node[Maze.getWidth()][Maze.getHeight()];
+        AllNodes = new Node[MazeImage.getWidth()][MazeImage.getHeight()];
 
-        for (int i = 0; i < Maze.getWidth(); i++) {
-            for (int j = 0; j < Maze.getHeight(); j++) {
-                int num = 150;
-                AllNodes[i][j] = new Node();
-                if (Maze.getRGB(i, j) < new Color(num, num, num).getRGB()) {
-                    Maze.setRGB(i, j, new Color(0, 0, 0).getRGB());
-                    AllNodes[i][j].setWall(true);
-                } else {
-                    Maze.setRGB(i, j, new Color(255, 255, 255).getRGB());
-                }
-                AllNodes[i][j].SetCords(i, j);
-
-            }
-        }
+        UpdateImageContrast(150);
+        myFrame = new MainFrame(MazeImage);
+        myFrame.setVisible(true);
     }
 
-    private BufferedImage CreateBufferedImage(final String ImagePath) throws IOException {
+    private static BufferedImage CreateBufferedImage(final String ImagePath) throws IOException {
         //Returns buffered image created from image specified from given file path
         return ImageIO.read(new File(UserDirectory + "Mazes\\" + ImagePath));
     }
-    private final JLabel MazePanel = new JLabel();
 
-    private void WindowSetup() {
+    private static MainFrame myFrame = new MainFrame(MazeImage);
 
-        GUIWindow.setVisible(true);
-        GUIWindow.setLayout(null);
-        GUIWindow.setDefaultCloseOperation(EXIT_ON_CLOSE);
+    private static int CurrentContrast = 150;
 
-        JLayeredPane MazeBorder = new JLayeredPane();
+    public static void UpdateImageContrast(int Contrast) {
+        CurrentContrast = Contrast;
+        MazeImage.getGraphics().drawImage(InputMaze, 0, 0, null);
+        for (int i = 0; i < MazeImage.getWidth(); i++) {
+            for (int j = 0; j < MazeImage.getHeight(); j++) {
 
-        //Setup GUI's window background properties
-        MazePanel.setLocation(6, 6);
-        MazePanel.setSize(new Dimension(Maze.getWidth(), Maze.getHeight()));
-
-        MazeBorder.setSize(new Dimension(Maze.getWidth() + 12, Maze.getHeight() + 12));
-        MazeBorder.setBorder(BorderFactory.createLineBorder(Color.BLACK, 6, false));
-
-        MazePanel.setIcon(new ImageIcon(Maze));
-        MazeBorder.add(MazePanel);
-
-        GUIWindow.setSize(new Dimension(Maze.getWidth() + 30, Maze.getHeight() + 59 + 80));
-
-        GUIWindow.add(MazeBorder);
-
-        MazePanel.addMouseListener(new MouseAdapter() {
-
-            //When mouse is released
-            @Override
-            public void mouseReleased(final java.awt.event.MouseEvent e) {
-                //Mouse held is set to false
-                StartAndEnd(e.getX(), e.getY());
-
-            }
-        });
-
-        End = new Point(Maze.getWidth(), Maze.getHeight());
-
-        // ContrastSlider.setBackground(AssetsColorArray[0]);
-        ContrastSlider.setFont(new Font("Tahoma", Font.BOLD, 12));
-        ContrastSlider.setBounds(0, Maze.getHeight() + 12, Maze.getWidth(), 80);
-        ContrastSlider.setMajorTickSpacing(50);
-        ContrastSlider.setMinorTickSpacing(1);
-        ContrastSlider.setPaintTrack(true);
-        ContrastSlider.setPaintTicks(true);
-        ContrastSlider.setPaintLabels(true);
-        ContrastSlider.setMaximum(255);
-        ContrastSlider.setMinimum(0);
-        ContrastSlider.setValue(150);
-
-        ContrastSlider.addChangeListener((final ChangeEvent e) -> {
-            Maze.getGraphics().drawImage(InputMaze, 0, 0, null);
-            for (int i = 0; i < Maze.getWidth(); i++) {
-                for (int j = 0; j < Maze.getHeight(); j++) {
-                    int num = ContrastSlider.getValue();
-                    AllNodes[i][j] = new Node();
-                    if (Maze.getRGB(i, j) < new Color(num, num, num).getRGB()) {
-                        Maze.setRGB(i, j, new Color(0, 0, 0).getRGB());
-                        AllNodes[i][j].setWall(true);
-                    } else {
-                        Maze.setRGB(i, j, new Color(255, 255, 255).getRGB());
-                    }
-                    AllNodes[i][j].SetCords(i, j);
-
+                AllNodes[i][j] = new Node();
+                AllNodes[i][j]. Reset();
+                if (MazeImage.getRGB(i, j) < new Color(Contrast, Contrast, Contrast).getRGB()) {
+                    MazeImage.setRGB(i, j, new Color(0, 0, 0).getRGB());
+                    AllNodes[i][j].setWall(true);
+                } else {
+                    MazeImage.setRGB(i, j, new Color(255, 255, 255).getRGB());
                 }
+                AllNodes[i][j].SetCords(i, j);
             }
-            MazePanel.repaint();
-            AtStart = true;
-            Over = false;
-
-            Start = new Point(0, 0);
-            End = new Point(0, 0);
-        });
-
-        GUIWindow.add(ContrastSlider);
+        }
+        Open.clear();
+        myFrame.UpdateImage();
+        AtStart = true;
 
     }
 
-    private final JSlider ContrastSlider = new JSlider();
+    private static boolean AtStart = true;
 
-    private boolean AtStart = true;
+    private static Point Start = new Point(0, 0);
+    private static Point End = new Point(0, 0);
 
-    private Point Start = new Point(0, 0);
-    private Point End = new Point(0, 0);
-    private boolean Over = false;
+    public static void StartAndEnd(int Xcord, int Ycord) {
 
-    private void StartAndEnd(int X, int Y) {
-        if (!Over) {
+        if (Xcord >= 0 && Xcord < MazeImage.getWidth() && Ycord >= 0 && Ycord < MazeImage.getHeight()) {
 
-            int Offset = 1;
             if (AtStart) {
 
-                for (int i = X - Offset; i < X + Offset; i++) {
-                    for (int j = Y - Offset; j < Y + Offset; j++) {
-                        try {
-                            if (Maze.getRGB(i, j) != new Color(0, 0, 0).getRGB()) {
-                                Maze.setRGB(i, j, new Color(0, 255, 0).getRGB());
-                                MazePanel.repaint();
-                            }
-
-                        } catch (Exception e) {
-                            //  System.out.println(e);
-                        }
-                    }
+                if (MazeImage.getRGB(Xcord, Ycord) != new Color(0, 0, 0).getRGB()) {
+                    UpdateImageContrast(CurrentContrast);
+                    MazeImage.setRGB(Xcord, Ycord, new Color(0, 128, 0).getRGB());
+                    myFrame.UpdateImage();
+                    Start = new Point(Xcord, Ycord);
+                    AtStart = false;
                 }
-                Start = new Point(X, Y);
-                AtStart = false;
 
             } else {
-                for (int i = X - Offset; i < X + Offset; i++) {
-                    for (int j = Y - Offset; j < Y + Offset; j++) {
-                        try {
-                            if (Maze.getRGB(i, j) != new Color(0, 0, 0).getRGB()) {
-                                Maze.setRGB(i, j, new Color(255, 0, 0).getRGB());
-                                MazePanel.repaint();
 
-                            }
-                        } catch (Exception e) {
-                            //  System.out.println(e);
-                        }
-                    }
+                if (MazeImage.getRGB(Xcord, Ycord) != new Color(0, 0, 0).getRGB()) {
+                    MazeImage.setRGB(Xcord, Ycord, new Color(255, 0, 0).getRGB());
+                    myFrame.UpdateImage();
+                    End = new Point(Xcord, Ycord);
+
+                    //  MazePanel.removeMouseListener(MazePanel.getMouseListeners()[0]);
+                    Thread T1 = new Thread(() -> {
+
+                        long startTime = System.currentTimeMillis();
+
+                        AStarPathfinder();
+
+                        long endTime = System.currentTimeMillis();
+
+                        System.out.println("That took " + (endTime - startTime) + " milliseconds");
+
+                    });
+                    T1.start();
+
                 }
 
-                End = new Point(X, Y);
-                Over = true;
-                //  MazePanel.removeMouseListener(MazePanel.getMouseListeners()[0]);
-
-                Thread T1 = new Thread(() -> {
-
-                    long startTime = System.currentTimeMillis();
-
-                    AStarPathfinder();
-
-                    long endTime = System.currentTimeMillis();
-
-                    System.out.println("That took " + (endTime - startTime) + " milliseconds");
-
-                });
-                T1.start();
-
             }
+
         }
     }
 
-    private final PriorityQueue<Node> Open = new PriorityQueue<>();
+    private static final PriorityQueue<Node> Open = new PriorityQueue<>();
 
-    private void AStarPathfinder() {
+    private static void AStarPathfinder() {
         /*
         This method finds the shortest path between the start and end node that avoids obstacles
         It uses the A* search algorithm
@@ -236,7 +153,8 @@ public class AStarPathfinding {
         AllNodes[Start.x][Start.y].setHcost(GetNodeDistance(AllNodes[Start.x][Start.y], AllNodes[End.x][End.y]));
         //Adds start node to open set
         Open.add(AllNodes[Start.x][Start.y]);
-        Maze.setRGB(Start.x, Start.y, Color.CYAN.getRGB());
+        MazeImage.setRGB(Start.x, Start.y, Color.CYAN.getRGB());
+        myFrame.UpdateImage();
 
         boolean FoundPath = false;
 
@@ -252,8 +170,8 @@ public class AStarPathfinding {
             Node Current = Open.poll();
             //Adds current node to closed set
             Current.setClosed(true);
-            Maze.setRGB(Current.getX(), Current.getY(), Color.BLUE.getRGB());
-            MazePanel.repaint();
+            MazeImage.setRGB(Current.getX(), Current.getY(), Color.BLUE.getRGB());
+
             //If the current node is the end node
             if (Current == AllNodes[End.x][End.y]) {
                 //Stops loop because path has been found
@@ -267,7 +185,7 @@ public class AStarPathfinding {
                             int Xcord = Current.getX() + i;
                             int Ycord = Current.getY() + j;
                             //If node coordinates are within bounds
-                            if (Xcord >= 0 && Xcord < Maze.getWidth() && Ycord >= 0 && Ycord < Maze.getHeight()) {
+                            if (Xcord >= 0 && Xcord < MazeImage.getWidth() && Ycord >= 0 && Ycord < MazeImage.getHeight()) {
                                 //If the neigbouring node is traversable and is not in the closed set
                                 if (!(AllNodes[Xcord][Ycord].isWall() || AllNodes[Xcord][Ycord].isClosed())) {
                                     //Calculate G Cost of start node
@@ -281,8 +199,8 @@ public class AStarPathfinding {
                                         AllNodes[Xcord][Ycord].setParent(Current);
                                         //Adds neigbouring node to open set
                                         Open.add(AllNodes[Xcord][Ycord]);
-                                        Maze.setRGB(Xcord, Ycord, Color.CYAN.getRGB());
-                                        MazePanel.repaint();
+                                        MazeImage.setRGB(Xcord, Ycord, Color.CYAN.getRGB());
+
                                     }//Otherwise if the G cost is lower than the neigbouring node's previous G cost
                                     else if (Gcost < AllNodes[Xcord][Ycord].getGcost()) {
                                         //Calculates F Cost of start node
@@ -297,27 +215,31 @@ public class AStarPathfinding {
                     }
                 }
             }
+            myFrame.UpdateImage();
         }
         //If path is found
         if (FoundPath) {
             //Loops through parents of nodes leading from the end node to the start node
             Node Current = AllNodes[End.x][End.y];
             while (Current != AllNodes[Start.x][Start.y]) {
-                Maze.setRGB(Current.getX(), Current.getY(), new Color(0, 255, 0).getRGB());
-                MazePanel.repaint();
+                MazeImage.setRGB(Current.getX(), Current.getY(), new Color(0, 255, 0).getRGB());
+                
                 Current = Current.getParent();
             }
-            Maze.setRGB(Start.x, Start.y, new Color(0, 255, 0).getRGB());
-            MazePanel.repaint();
+
             System.out.println("Path found");
         } //If path is not found
         else {
             System.out.println("No path found");
         }
+        MazeImage.setRGB(Start.x, Start.y, new Color(0, 128, 0).getRGB());
+        MazeImage.setRGB(End.x, End.y, new Color(255, 0, 0).getRGB());
+        myFrame.UpdateImage();
+        AtStart = true;
 
     }
 
-    private int GetNodeDistance(Node NodeA, Node NodeB) {
+    private static int GetNodeDistance(Node NodeA, Node NodeB) {
         /*
         This method finds the distance between two nodes (sum of edges between them)
         It then returns this distance

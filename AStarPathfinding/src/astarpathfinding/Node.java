@@ -16,7 +16,12 @@ public class Node implements Comparable<Node> {
     public void SetCords(int X, int Y) {
         this.X = X;
         this.Y = Y;
+    }
 
+    public void Reset() {
+        Wall = false;
+        Closed = false;
+        Parent= null;
     }
 
     public int getX() {
@@ -73,9 +78,9 @@ public class Node implements Comparable<Node> {
 
     @Override
     public int compareTo(Node t) {
-     
+
         return (t.getFcost() < this.getFcost() || (t.getFcost() == this.getFcost() && t.getHcost() < this.getHcost())) ? 1 : -1;
-      
+
     }
 
 }
