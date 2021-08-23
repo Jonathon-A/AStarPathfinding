@@ -4,6 +4,7 @@ Uses A* search algorithm to solve mazes. Upload an image of a maze to the "dist\
 
 Some images of the project:
 
+![alt text](https://github.com/Jonathon-A/AStarPathfinding/blob/main/Images/GUI.png)
 ![alt text](https://github.com/Jonathon-A/AStarPathfinding/blob/main/Images/BigMaze.png)
 ![alt text](https://github.com/Jonathon-A/AStarPathfinding/blob/main/Images/BigMazeSolved.png)
 ![alt text](https://github.com/Jonathon-A/AStarPathfinding/blob/main/Images/RatMazeSolved.png)
