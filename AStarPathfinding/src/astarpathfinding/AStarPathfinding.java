@@ -55,7 +55,7 @@ public abstract class AStarPathfinding {
 
                     AllNodes[i][j] = new Node();
                     AllNodes[i][j].Reset();
-                    if (MazeImage.getRGB(i, j) < new Color(Contrast, Contrast, Contrast).getRGB()) {
+                    if (MazeImage.getRGB(i, j) < new Color(CurrentContrast, CurrentContrast, CurrentContrast).getRGB()) {
                         MazeImage.setRGB(i, j, new Color(0, 0, 0).getRGB());
                         AllNodes[i][j].setWall(true);
                     } else {
@@ -83,7 +83,7 @@ public abstract class AStarPathfinding {
 
             if (AtStart) {
 
-                if (MazeImage.getRGB(Xcord, Ycord) != new Color(0, 0, 0).getRGB()) {
+                if (!AllNodes[Xcord][Ycord].isWall()) {
                     UpdateImageContrast(CurrentContrast);
                     MazeImage.setRGB(Xcord, Ycord, new Color(0, 128, 0).getRGB());
                     myFrame.UpdateImage();
@@ -93,7 +93,7 @@ public abstract class AStarPathfinding {
 
             } else {
 
-                if (MazeImage.getRGB(Xcord, Ycord) != new Color(0, 0, 0).getRGB()) {
+                if (!AllNodes[Xcord][Ycord].isWall()) {
                     MazeImage.setRGB(Xcord, Ycord, new Color(255, 0, 0).getRGB());
                     myFrame.UpdateImage();
                     End = new Point(Xcord, Ycord);
@@ -178,7 +178,7 @@ public abstract class AStarPathfinding {
                                         AllNodes[Xcord][Ycord].setParent(Current);
                                         //Adds neigbouring node to open set
                                         Open.add(AllNodes[Xcord][Ycord]);
-                                        MazeImage.setRGB(Xcord, Ycord, Color.CYAN.getRGB());
+                                        MazeImage.setRGB(Xcord, Ycord, Color.PINK.getRGB());
 
                                     }//Otherwise if the G cost is lower than the neigbouring node's previous G cost
                                     else if (Gcost < AllNodes[Xcord][Ycord].getGcost()) {
@@ -196,7 +196,7 @@ public abstract class AStarPathfinding {
             }
             myFrame.UpdateImage();
         }
-        String EndStr = "";
+        String EndStr;
         //If path is found
         if (FoundPath) {
             //Loops through parents of nodes leading from the end node to the start node
