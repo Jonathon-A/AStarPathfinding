@@ -1,95 +1,74 @@
 package astarpathfinding;
 
 import java.awt.Color;
-import java.awt.Dimension;
-import java.awt.Font;
 import java.awt.Point;
-import java.awt.event.MouseAdapter;
 import java.awt.image.BufferedImage;
-import java.io.File;
-import java.io.IOException;
 import java.util.PriorityQueue;
-import java.util.Scanner;
-import javax.imageio.ImageIO;
-import javax.swing.BorderFactory;
-import javax.swing.ImageIcon;
-import javax.swing.JFrame;
-import static javax.swing.JFrame.EXIT_ON_CLOSE;
-import javax.swing.JLabel;
-import javax.swing.JLayeredPane;
-import javax.swing.JSlider;
-import javax.swing.event.ChangeEvent;
 
 public abstract class AStarPathfinding {
 
-    //Directory of project on user's computer
-    final static String UserDirectory = System.getProperty("user.dir") + "\\dist\\";
+ 
 
     public static void main(String[] args) {
 
-        GetImage();
+        WindowSetup();
 
     }
 
     private static Node[][] AllNodes;
-    private static BufferedImage InputMaze = null;
+    private static BufferedImage InputMazeImage = null;
     private static BufferedImage MazeImage = null;
 
-    private static void GetImage() {
-        Scanner input = new Scanner(System.in);
+    public static void SetImage(BufferedImage InputImage) {
 
-        do {
+        InputMazeImage = InputImage;
 
-            System.out.println("Image name:");
-            //String name = "5.png";
-             String name = input.next();
-
-            try {
-                InputMaze = CreateBufferedImage(name);
-            } catch (Exception e) {
-                InputMaze = null;
-            }
-
-        } while (InputMaze == null);
-
-        MazeImage = new BufferedImage(InputMaze.getWidth(), InputMaze.getHeight(), BufferedImage.TYPE_INT_ARGB);
+        MazeImage = new BufferedImage(InputMazeImage.getWidth(), InputMazeImage.getHeight(), BufferedImage.TYPE_INT_ARGB);
 
         AllNodes = new Node[MazeImage.getWidth()][MazeImage.getHeight()];
 
         UpdateImageContrast(150);
+
+        myFrame.UpdateImage(MazeImage);
+    }
+
+    public static void WindowSetup() {
         myFrame = new MainFrame(MazeImage);
         myFrame.setVisible(true);
     }
 
-    private static BufferedImage CreateBufferedImage(final String ImagePath) throws IOException {
-        //Returns buffered image created from image specified from given file path
-        return ImageIO.read(new File(UserDirectory + "Mazes\\" + ImagePath));
-    }
-
+//    private static BufferedImage CreateBufferedImage(final String ImagePath) throws IOException {
+//        //Returns buffered image created from image specified from given file path
+//        return ImageIO.read(new File(UserDirectory + "Mazes\\" + ImagePath));
+//    }
     private static MainFrame myFrame = new MainFrame(MazeImage);
 
     private static int CurrentContrast = 150;
 
     public static void UpdateImageContrast(int Contrast) {
-        CurrentContrast = Contrast;
-        MazeImage.getGraphics().drawImage(InputMaze, 0, 0, null);
-        for (int i = 0; i < MazeImage.getWidth(); i++) {
-            for (int j = 0; j < MazeImage.getHeight(); j++) {
+        if (InputMazeImage != null) {
 
-                AllNodes[i][j] = new Node();
-                AllNodes[i][j]. Reset();
-                if (MazeImage.getRGB(i, j) < new Color(Contrast, Contrast, Contrast).getRGB()) {
-                    MazeImage.setRGB(i, j, new Color(0, 0, 0).getRGB());
-                    AllNodes[i][j].setWall(true);
-                } else {
-                    MazeImage.setRGB(i, j, new Color(255, 255, 255).getRGB());
+            CurrentContrast = Contrast;
+            MazeImage.getGraphics().drawImage(InputMazeImage, 0, 0, null);
+            for (int i = 0; i < MazeImage.getWidth(); i++) {
+                for (int j = 0; j < MazeImage.getHeight(); j++) {
+
+                    AllNodes[i][j] = new Node();
+                    AllNodes[i][j].Reset();
+                    if (MazeImage.getRGB(i, j) < new Color(Contrast, Contrast, Contrast).getRGB()) {
+                        MazeImage.setRGB(i, j, new Color(0, 0, 0).getRGB());
+                        AllNodes[i][j].setWall(true);
+                    } else {
+                        MazeImage.setRGB(i, j, new Color(255, 255, 255).getRGB());
+                    }
+                    AllNodes[i][j].SetCords(i, j);
                 }
-                AllNodes[i][j].SetCords(i, j);
             }
+            Open.clear();
+            myFrame.UpdateImage();
+            AtStart = true;
+            myFrame.UpdateString("");
         }
-        Open.clear();
-        myFrame.UpdateImage();
-        AtStart = true;
 
     }
 
@@ -100,7 +79,7 @@ public abstract class AStarPathfinding {
 
     public static void StartAndEnd(int Xcord, int Ycord) {
 
-        if (Xcord >= 0 && Xcord < MazeImage.getWidth() && Ycord >= 0 && Ycord < MazeImage.getHeight()) {
+        if (InputMazeImage != null && Xcord >= 0 && Xcord < MazeImage.getWidth() && Ycord >= 0 && Ycord < MazeImage.getHeight()) {
 
             if (AtStart) {
 
@@ -124,15 +103,15 @@ public abstract class AStarPathfinding {
 
                         long startTime = System.currentTimeMillis();
 
-                        AStarPathfinder();
+                        String EndStr = AStarPathfinder();
 
                         long endTime = System.currentTimeMillis();
 
-                        System.out.println("That took " + (endTime - startTime) + " milliseconds");
+                        myFrame.UpdateString(EndStr + "! That took " + (endTime - startTime) + " milliseconds.");
 
                     });
                     T1.start();
-
+                 
                 }
 
             }
@@ -142,7 +121,7 @@ public abstract class AStarPathfinding {
 
     private static final PriorityQueue<Node> Open = new PriorityQueue<>();
 
-    private static void AStarPathfinder() {
+    private static String AStarPathfinder() {
         /*
         This method finds the shortest path between the start and end node that avoids obstacles
         It uses the A* search algorithm
@@ -217,26 +196,28 @@ public abstract class AStarPathfinding {
             }
             myFrame.UpdateImage();
         }
+        String EndStr = "";
         //If path is found
         if (FoundPath) {
             //Loops through parents of nodes leading from the end node to the start node
             Node Current = AllNodes[End.x][End.y];
             while (Current != AllNodes[Start.x][Start.y]) {
                 MazeImage.setRGB(Current.getX(), Current.getY(), new Color(0, 255, 0).getRGB());
-                
+
                 Current = Current.getParent();
             }
 
-            System.out.println("Path found");
+            EndStr = "Path found";
         } //If path is not found
         else {
-            System.out.println("No path found");
+            EndStr = "No path found";
         }
         MazeImage.setRGB(Start.x, Start.y, new Color(0, 128, 0).getRGB());
         MazeImage.setRGB(End.x, End.y, new Color(255, 0, 0).getRGB());
         myFrame.UpdateImage();
         AtStart = true;
 
+        return EndStr;
     }
 
     private static int GetNodeDistance(Node NodeA, Node NodeB) {

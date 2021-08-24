@@ -1,5 +1,6 @@
 package astarpathfinding;
 
+import java.awt.Font;
 import java.awt.Graphics;
 import java.awt.Graphics2D;
 import java.awt.MouseInfo;
@@ -11,6 +12,7 @@ import java.awt.event.MouseWheelEvent;
 import java.awt.event.MouseWheelListener;
 import java.awt.geom.AffineTransform;
 import java.awt.image.BufferedImage;
+import javax.swing.JLabel;
 import javax.swing.JPanel;
 
 //this class modified from Thanasis1101's code
@@ -33,11 +35,24 @@ public class MainPanel extends JPanel implements MouseWheelListener, MouseListen
 
         this.image = _image;
         initComponent();
+        Defualtat = Prevat;
 
     }
 
+    public void NewImage(BufferedImage _image) {
+        image = _image;
+        zoomer = false;
+        dragger = false;
+        zoomFactor = 1;
+        prevZoomFactor = 1;
+        xOffset = 0;
+        yOffset = 0;
+        Prevat = Defualtat;
+        repaint();
+    }
+
     public void UpdateImage() {
-       
+
         repaint();
     }
 
@@ -45,9 +60,11 @@ public class MainPanel extends JPanel implements MouseWheelListener, MouseListen
         addMouseWheelListener(this);
         addMouseMotionListener(this);
         addMouseListener(this);
+
     }
 
     private AffineTransform Prevat = new AffineTransform();
+    private AffineTransform Defualtat = new AffineTransform();
 
     @Override
     public void paint(Graphics g) {
