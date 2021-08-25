@@ -1,5 +1,5 @@
 # AStarPathfinding
-Uses A* search algorithm to solve mazes. Upload an image of a maze by dragging and dropping the image file onto the GUI. If necessary, adjust the contrast of the image with the program to increase the disparity between walls and paths. Click on the start and end point on the image and watch the optimum path be created
+Uses A* search algorithm to solve mazes. Download and run the jar file. Upload an image of a maze by dragging and dropping the image file onto the GUI. If necessary, adjust the contrast of the image with the program to increase the disparity between walls and paths. Click on the start and end point on the image and watch the optimum path be created
 
 
 Some images of the project:
