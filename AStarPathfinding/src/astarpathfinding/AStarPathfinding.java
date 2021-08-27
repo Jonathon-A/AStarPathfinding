@@ -27,7 +27,7 @@ public abstract class AStarPathfinding {
 
         AllNodes = new Node[MazeImage.getWidth()][MazeImage.getHeight()];
 
-        UpdateImageContrast(150);
+        UpdateImageContrast(CurrentContrast);
 
         myFrame.UpdateImage(MazeImage);
     }
