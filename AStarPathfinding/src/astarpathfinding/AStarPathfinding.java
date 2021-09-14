@@ -7,7 +7,6 @@ import java.util.PriorityQueue;
 
 public abstract class AStarPathfinding {
 
- 
 
     public static void main(String[] args) {
 
@@ -30,6 +29,7 @@ public abstract class AStarPathfinding {
         UpdateImageContrast(CurrentContrast);
 
         myFrame.UpdateImage(MazeImage);
+        
     }
 
     public static void WindowSetup() {
