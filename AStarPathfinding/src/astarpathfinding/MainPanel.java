@@ -1,6 +1,5 @@
 package astarpathfinding;
 
-import java.awt.Font;
 import java.awt.Graphics;
 import java.awt.Graphics2D;
 import java.awt.MouseInfo;
@@ -12,7 +11,6 @@ import java.awt.event.MouseWheelEvent;
 import java.awt.event.MouseWheelListener;
 import java.awt.geom.AffineTransform;
 import java.awt.image.BufferedImage;
-import javax.swing.JLabel;
 import javax.swing.JPanel;
 
 //this class modified from Thanasis1101's code
